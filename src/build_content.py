@@ -107,9 +107,3 @@ def create_hugo_item(item, base_output_dir, is_post=True):
             f.write(markdown_content)
     except Exception as e:
         print(f"{Fore.RED}Error writing {file_path}: {e}{Style.RESET_ALL}")
-
-def build_front_matter(post_data, manifest):
-    """
-    Helper to construct YAML front matter from manifest data.
-    """
-    pass
