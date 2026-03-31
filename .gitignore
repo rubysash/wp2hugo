@@ -1,0 +1,22 @@
+# Environments
+.env
+.env.local
+venv/
+Include/
+Lib/
+Scripts/
+pyvenv.cfg
+
+# WordPress Source Data
+*.sql
+
+# Generated Output
+output/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Local IDE settings
+.vscode/
+.idea/
