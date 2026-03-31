@@ -84,7 +84,7 @@ def main():
     download_assets(manifest, force_continue=args.force_continue, skip_codes=skip_codes)
 
     # Stage 5: Fix internal links and update remote image paths to local ones
-    # post_process_links(config.HUGO_CONTENT_DIR, manifest)
+    post_process_links(config.HUGO_CONTENT_DIR, manifest)
 
     # Stage 6: Final audit to ensure everything was migrated correctly
     # verify_migration(manifest, config.HUGO_CONTENT_DIR)

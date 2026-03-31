@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # --- General Settings ---
-VERSION = "1.5.2"
+VERSION = "1.6.1"
 # resets everything for a clean slate or attempts to skip existing asset download.
 RESET_FRESH = True
 SQL_INPUT_FILE = "export.sql"

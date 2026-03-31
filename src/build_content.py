@@ -61,6 +61,7 @@ def create_hugo_item(item, base_output_dir, is_post=True):
         "title": item["post_title"],
         "date": item["post_date"],
         "draft": item["post_status"] == "draft",
+        "summary": item["post_excerpt"] if item["post_excerpt"] else "",
         "description": item["post_excerpt"] if item["post_excerpt"] else "",
         "categories": item["item_categories"],
         "tags": item["item_tags"],
@@ -73,7 +74,7 @@ def create_hugo_item(item, base_output_dir, is_post=True):
     # Handle Featured Image
     if item.get("featured_image"):
         ext = os.path.splitext(item["featured_image"])[1]
-        front_matter["featureImage"] = f"featured{ext}"
+        front_matter["featureimage"] = f"featured{ext}"
 
     # Convert Content to Markdown
     content = item["post_content"]

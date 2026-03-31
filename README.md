@@ -17,6 +17,8 @@ A modular Python migration tool to convert WordPress SQL dumps into Hugo Page Bu
 
 ## Version Log
 
+- **v1.6.1**: Aligned front matter with official Blowfish schema (using `featureimage` and adding `summary`).
+- **v1.6.0**: Implemented Stage 5: Link Transformation.
 - **v1.5.2**: Security update. Moved `SITE_DOMAIN` and `WP_PREFIX` to `.env` file to protect site identity.
 - **v1.5.1**: Documentation overhaul. Updated README and Specs with all CLI flags and workflow details.
 - **v1.5.0**: Added `download_history.json` to track successes/failures. Asset downloader now has persistent resume memory.

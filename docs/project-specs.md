@@ -52,6 +52,7 @@ python main.py --assets-only
 
 ### 3. Content Generation (`build_content.py`)
 - **Cleaning:** Uses `src/utils/html_cleaner.py` to strip Gutenberg noise and map shortcodes.
+- **Front Matter:** Follows official [Blowfish Front Matter](https://blowfish.page/docs/front-matter/) schema.
 - **Bundling:** Creates `index.md` files in nested folders matching the category path.
 - **Shortcodes:** (Optional) Injects a custom footer shortcode via `ADD_FOOTER_SHORTCODE`.
 
