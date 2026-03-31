@@ -34,8 +34,11 @@ You will need to modify the blowfish theme to look the way you want.   This scri
 
 ## Version Log
 
+- **v1.9.0**: Implemented detailed CSV audit log (`audit_details.csv`) with per-item link and asset counts.
+- **v1.8.0**: Finalized Page Bundle synchronization. All content images are now strictly stored within their post folders. Refactored Auditor to match.
+- **v1.7.0**: Implemented Stage 6: Migration Auditor. Added `--audit-local` and `--audit-remote` flags to verify migration integrity.
+- **v1.6.4**: Cleaned up redundant `build_front_matter` stub in `src/build_content.py`.
 - **v1.6.3**: Added detailed comments to `config.py` explaining each setting and rationale.
-- **v1.6.2**: Fixed documentation link to MySQL Export instructions.
 - **v1.6.1**: Aligned front matter with official Blowfish schema (using `featureimage` and adding `summary`).
 - **v1.6.0**: Implemented Stage 5: Link Transformation.
 - **v1.5.2**: Security update. Moved `SITE_DOMAIN` and `WP_PREFIX` to `.env` file to protect site identity.

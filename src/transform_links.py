@@ -1,81 +1,75 @@
 import os
 import re
-import json
 import logging
 import config
 from colorama import Fore, Style
 
 def post_process_links(hugo_content_dir, manifest):
     """
-    Scans Markdown files to transform internal WordPress links to Hugo relative paths.
-    Converts remote image URLs to local paths.
+    Transforms internal WP links to Hugo refs and maps images to relative paths.
     """
     logger = logging.getLogger(__name__)
     print(f"{Fore.CYAN}Stage 5: Transforming links and asset paths...{Style.RESET_ALL}")
 
-    # 1. Build the Mapping
-    # Map old WP URLs/IDs to new Hugo paths
-    url_map = {}
+    url_map = build_url_map(manifest)
     
-    # Handle Posts
-    for post in manifest.get("posts", []):
-        old_url = f"{config.SITE_DOMAIN}/?p={post['ID']}"
-        # Hugo path: /posts/category/slug/
-        if config.USE_CATEGORY_FOLDERS and post.get("category_path"):
-            new_path = f"/posts/{post['category_path']}/{post['post_name']}/"
-        else:
-            new_path = f"/posts/{post['post_name']}/"
-        url_map[old_url] = new_path
-        # Also map slug-based URL if possible
-        url_map[f"{config.SITE_DOMAIN}/{post['post_name']}/"] = new_path
-
-    # Handle Pages
-    for page in manifest.get("pages", []):
-        old_url = f"{config.SITE_DOMAIN}/?p={page['ID']}"
-        new_path = f"/{page['post_name']}/"
-        url_map[old_url] = new_path
-        url_map[f"{config.SITE_DOMAIN}/{page['post_name']}/"] = new_path
-
-    # 2. Iterate through Markdown files
     count_files = 0
     count_links = 0
     count_images = 0
 
-    for root, dirs, files in os.walk(hugo_content_dir):
-        for file in files:
-            if file.endswith(".md"):
-                file_path = os.path.join(root, file)
-                with open(file_path, "r", encoding="utf-8") as f:
-                    content = f.read()
+    items = manifest.get("posts", []) + manifest.get("pages", [])
+    for item in items:
+        file_path = get_item_index_md(item, hugo_content_dir)
+        if not os.path.exists(file_path):
+            continue
 
-                original_content = content
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
 
-                # A. Replace Internal Links
-                # Look for patterns matching the site domain
-                for old_url, new_path in url_map.items():
-                    # Check for standard Markdown links [text](url)
-                    link_pattern = re.escape(old_url)
-                    if old_url in content:
-                        content = content.replace(old_url, f'{{{{< ref "{new_path}" >}}}}')
-                        count_links += 1
+        original_content = content
 
-                # B. Replace Image URLs
-                # Remote images were downloaded to output/assets/i/
-                # We want them to point to /i/filename.ext (assuming they move to Hugo static/i)
-                for asset_url in manifest.get("assets", []):
-                    if asset_url in content:
-                        filename = os.path.basename(asset_url)
-                        # Point to the global assets directory structure
-                        new_img_path = f"/i/{filename}"
-                        content = content.replace(asset_url, new_img_path)
-                        count_images += 1
+        # A. Replace Internal Links (Absolute WP -> Hugo ref)
+        for old_url, new_path in url_map.items():
+            if old_url in content:
+                content = content.replace(old_url, f'{{{{< ref "{new_path}" >}}}}')
+                count_links += 1
 
-                # 3. Save if changed
-                if content != original_content:
-                    with open(file_path, "w", encoding="utf-8") as f:
-                        f.write(content)
-                    count_files += 1
+        # B. Replace Image URLs (Absolute WP -> Relative Filename)
+        # For Page Bundles, the image is now in the same folder.
+        for asset_url in item.get("local_assets", []):
+            if asset_url in content:
+                filename = os.path.basename(asset_url)
+                # Just the filename, as it's now in the same folder
+                content = content.replace(asset_url, filename)
+                count_images += 1
+
+        if content != original_content:
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(content)
+            count_files += 1
 
     print(f"{Fore.GREEN}Link transformation complete.{Style.RESET_ALL}")
-    print(f"{Fore.WHITE}  Updated {count_links} internal links and {count_images} image paths across {count_files} files.")
-    logger.info(f"Transformed {count_links} links and {count_images} images in {count_files} files.")
+    print(f"{Fore.WHITE}  Updated {count_links} links and {count_images} images in {count_files} files.")
+
+def build_url_map(manifest):
+    url_map = {}
+    for post in manifest.get("posts", []):
+        path = f"/posts/{post['category_path']}/{post['post_name']}/" if config.USE_CATEGORY_FOLDERS and post.get("category_path") else f"/posts/{post['post_name']}/"
+        url_map[f"{config.SITE_DOMAIN}/?p={post['ID']}"] = path
+        url_map[f"{config.SITE_DOMAIN}/{post['post_name']}/"] = path
+    
+    for page in manifest.get("pages", []):
+        path = f"/{page['post_name']}/"
+        url_map[f"{config.SITE_DOMAIN}/?p={page['ID']}"] = path
+        url_map[f"{config.SITE_DOMAIN}/{page['post_name']}/"] = path
+    return url_map
+
+def get_item_index_md(item, content_dir):
+    if item["post_type"] == 'post':
+        if config.USE_CATEGORY_FOLDERS and item.get("category_path"):
+            folder = os.path.join(content_dir, "posts", item["category_path"], item["post_name"])
+        else:
+            folder = os.path.join(content_dir, "posts", item["post_name"])
+    else:
+        folder = os.path.join(content_dir, item["post_name"])
+    return os.path.join(folder, "index.md")

@@ -8,7 +8,7 @@ load_dotenv()
 
 # --- General Project Settings ---
 # Current version of the migration tool.
-VERSION = "1.6.4"
+VERSION = "1.9.0"
 
 # If True, the script deletes the entire 'output/' directory before starting.
 # Why: Ensures a clean slate so old files from previous runs don't mix with new data.
@@ -28,8 +28,8 @@ HUGO_CONTENT_DIR = os.path.join(OUTPUT_DIR, "content")
 # Meta path: Where internal project data (logs, database, manifest) is stored.
 META_DIR = os.path.join(OUTPUT_DIR, "meta")
 
-# Global Assets: Where non-featured images (content images) are downloaded.
-# Why: These are usually moved to your Hugo 'static/i/' folder for site-wide access.
+# Global Assets: Used ONLY for site-wide static files (headers, backgrounds).
+# Content-specific images are automatically placed in Page Bundles (Stage 4).
 GLOBAL_ASSET_DIR = os.path.join(OUTPUT_DIR, "assets", "i")
 
 # --- Meta File Definitions ---
