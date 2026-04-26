@@ -8,7 +8,7 @@ load_dotenv()
 
 # --- General Project Settings ---
 # Current version of the migration tool.
-VERSION = "1.9.0"
+VERSION = "1.9.1"
 
 # If True, the script deletes the entire 'output/' directory before starting.
 # Why: Ensures a clean slate so old files from previous runs don't mix with new data.

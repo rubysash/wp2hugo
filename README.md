@@ -34,7 +34,9 @@ You will need to modify the blowfish theme to look the way you want.   This scri
 
 ## Version Log
 
-- **v1.9.0**: Implemented detailed CSV audit log (`audit_details.csv`) with per-item link and asset counts.
+- **v1.9.1**: Documentation update. Clarified the hierarchy between `.env` and `config.py` and documented default fallback values.
+- **v1.9.0**: Implemented detailed CSV audit log (`audit_details.csv`) with per-item link and asset counts. 
+
 - **v1.8.0**: Finalized Page Bundle synchronization. All content images are now strictly stored within their post folders. Refactored Auditor to match.
 - **v1.7.0**: Implemented Stage 6: Migration Auditor. Added `--audit-local` and `--audit-remote` flags to verify migration integrity.
 - **v1.6.4**: Cleaned up redundant `build_front_matter` stub in `src/build_content.py`.
@@ -84,8 +86,23 @@ python main.py --assets-only
 - `--force-continue`: Ignore all HTTP errors and keep downloading.
 - `--skip-codes=404,403`: Skip specific error codes but stop on others.
 
-## Configuration (`config.py`)
+## Configuration & Environment
 
-- **RESET_FRESH**: Wipes the `output/` folder for a clean start.
-- **DOWNLOAD_ASSETS**: Set to `True` to fetch remote images during full migration.
-- **ADD_FOOTER_SHORTCODE**: Inject a specific Hugo shortcode into every page.
+The tool uses a two-tier configuration system to balance flexibility and security.
+
+### 1. `.env` File (Site-Specific)
+Variables in `.env` override internal defaults and are used for site-specific identity. **You should copy `.env.example` to `.env` to get started.**
+
+- **`SITE_DOMAIN`**: Your live WordPress URL (e.g., `https://mysite.com`). Used to resolve absolute image paths and fix internal links. 
+  - *Default if missing:* `https://example.com`
+- **`WP_PREFIX`**: Your WordPress database table prefix. 
+  - *Default if missing:* `wp_`
+
+### 2. `config.py` (Strategy & Behavior)
+This file contains the core logic settings. You can modify these directly to change how the migration behaves:
+
+- **`RESET_FRESH`**: If `True`, wipes the `output/` folder before every run to prevent data mixing.
+- **`DOWNLOAD_ASSETS`**: Set to `True` to fetch remote images during a full migration.
+- **`ADD_FOOTER_SHORTCODE`**: If `True`, injects a specific Hugo shortcode into every generated Markdown file.
+- **`USE_PAGE_BUNDLES`**: (Recommended `True`) Creates folder-based posts compatible with the Blowfish theme.
+- **`MIGRATE_STATUSES`**: List of post statuses to include (e.g., `['publish', 'draft']`).
